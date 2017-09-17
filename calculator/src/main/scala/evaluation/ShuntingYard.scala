@@ -4,9 +4,19 @@ import parsing.Token
 
 import scala.collection.mutable.ListBuffer
 
+/**
+  * The object implementing the <a href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">shunting-yard algorithm</a>
+  * which transforms a list of tokens into <a href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">reverse Polish notation</a>
+  */
 object ShuntingYard {
+  /**
+    * transforms the list of tokens into list of arithmetic evaluation entities wrote in reverse Polish notation.
+    * It can be simply generalized to return rpn of any EvaluationEntity, not only of arithmetic one
+    * (e.g. we can evaluate expression into ast)
+    * @param tokens list of tokens, input of the algorithm
+    * @return list of arithmetic evaluation entities in reverse Polish notation
+    */
   def toRPN(tokens: List[Token]): List[ArithmeticEvaluationEntity] = {
-
     val rpnResult: ListBuffer[ArithmeticEvaluationEntity] = ListBuffer.empty
     val operatorStack: ListBuffer[Token] = ListBuffer.empty
     def shift() = rpnResult += ArithmeticEvaluationEntity(operatorStack.remove(0))

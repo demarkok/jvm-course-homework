@@ -2,14 +2,22 @@ package parsing
 
 import scala.util.matching.Regex
 
+/**
+  * Represents entity which splits string into arithmetic tokens
+  */
 object Tokenizer {
-  lazy val regex: Regex = {
+  private val regex: Regex = {
     TokenType.getInstances
       .map(tokenType => "(?<" + tokenType.toString + ">" + tokenType.regex.regex + ")")
       .mkString("|")
       .r
   }
 
+  /**
+    * Splits given string into tokens.
+    * @param rawString Input of the algorithm. The given string.
+    * @return Some list of tokens if tokenizing completed successfully. Otherwise None.
+    */
  def tokenize(rawString: String): Option[List[Token]] = {
     val string = rawString.trim
     if (string.isEmpty) {
