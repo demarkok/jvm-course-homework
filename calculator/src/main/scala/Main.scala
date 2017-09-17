@@ -1,5 +1,5 @@
-import evaluation.{EvaluationException, Evaluator, ShuntingYard}
-import parsing.Tokenizer
+import ru.spbau.kaysin.evaluation.{EvaluationException, Evaluator, ShuntingYard}
+import ru.spbau.kaysin.parsing.{Tokenizer, ParsingException}
 
 object Main {
 
@@ -28,7 +28,7 @@ object Main {
 
       println(evaluator.evaluate(rpn))
     } catch {
-      case parsing.ParsingException => println(parsingErrorMsg)
+      case ParsingException => println(parsingErrorMsg)
       case EvaluationException => println(evaluationErrorMsg)
       case _: Exception => println(errorMsg)
     }

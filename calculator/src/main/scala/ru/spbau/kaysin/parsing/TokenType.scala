@@ -1,4 +1,4 @@
-package parsing
+package ru.spbau.kaysin.parsing
 
 import scala.util.matching.Regex
 
@@ -26,19 +26,19 @@ object TokenType {
   def getInstances: List[TokenType] = instances
 
   // I should initialize the instances beforehand to add them automatically into getInstances list. I don't know how to fix it :(
-  OpeningBracket
-  ClosingBracket
-  Plus
-  Minus
-  Mul
-  Div
-  Number
+  OpeningBracketType
+  ClosingBracketType
+  PlusType
+  MinusType
+  MulType
+  DivType
+  NumberType
 }
 
 /**
   * The class of token types which corresponding to arithmetic operators (e.g. +, -, *, /, etc).
   */
-sealed trait Operator extends TokenType {
+sealed trait OperatorType extends TokenType {
   /**
     * The operator priority.
     */
@@ -53,21 +53,21 @@ sealed trait Operator extends TokenType {
 /**
   * The token type corresponding to symbol '('
   */
-case object OpeningBracket extends TokenType {
+case object OpeningBracketType extends TokenType {
   override val regex: Regex = raw"\(".r
 }
 
 /**
   * The token type corresponding to symbol ')'
   */
-case object ClosingBracket extends TokenType {
+case object ClosingBracketType extends TokenType {
   override val regex: Regex = raw"\)".r
 }
 
 /**
   * The token type corresponding to symbol '+'
   */
-case object Plus extends Operator {
+case object PlusType extends OperatorType {
   override val regex: Regex = raw"\+".r
   override val priority = 1
   override val isLeftAssoc = true
@@ -76,7 +76,7 @@ case object Plus extends Operator {
 /**
   * The token type corresponding to symbol '-'
   */
-case object Minus extends Operator {
+case object MinusType extends OperatorType {
   override val regex: Regex = "-".r
   override val priority = 1
   override val isLeftAssoc = true
@@ -85,7 +85,7 @@ case object Minus extends Operator {
 /**
   * The token type corresponding to symbol '*'
   */
-case object Mul extends Operator {
+case object MulType extends OperatorType {
   override val regex: Regex = raw"\*".r
   override val priority = 2
   override val isLeftAssoc = true
@@ -94,7 +94,7 @@ case object Mul extends Operator {
 /**
   * The token type corresponding to symbol '*'
   */
-case object Div extends Operator {
+case object DivType extends OperatorType {
   override val regex: Regex = "/".r
   override val priority = 2
   override val isLeftAssoc = true
@@ -103,6 +103,6 @@ case object Div extends Operator {
 /**
   * The token type corresponding to real positive number (e.g. 4, 1.5, 18, .001, etc)
   */
-case object Number extends TokenType {
+case object NumberType extends TokenType {
   override val regex: Regex = raw"(\d*\.)?(\d)+".r
 }

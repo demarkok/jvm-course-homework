@@ -1,7 +1,6 @@
-package evaluation
+package ru.spbau.kaysin.evaluation
 
-import parsing.Token
-import sun.security.pkcs.ParsingException
+import ru.spbau.kaysin.parsing._
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -9,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 /**
   * The trait describing an entity related to arithmetic.
   * E.g. it might be number, operator or function.
-  * It should return Double as evaluation result.
+  * It should return Double as ru.spbau.kaysin.evaluation result.
   */
 sealed trait ArithmeticEvaluationEntity extends EvaluationEntity[Double]
 
@@ -21,14 +20,14 @@ object ArithmeticEvaluationEntity {
   /**
     * Constructs ArithmeticEvaluationEntity from arithmetic token.
     * @param token arithmetic token
-    * @return corresponding evaluation entity
+    * @return corresponding ru.spbau.kaysin.evaluation entity
     */
   def apply(token: Token): ArithmeticEvaluationEntity = token match {
-    case Token(parsing.Plus, _) => Plus
-    case Token(parsing.Minus, _) => Minus
-    case Token(parsing.Mul, _) => Mul
-    case Token(parsing.Div, _) => Div
-    case Token(parsing.Number, value) => new Value(value.toDouble)
+    case Token(PlusType, _) => Plus
+    case Token(MinusType, _) => Minus
+    case Token(MulType, _) => Mul
+    case Token(DivType, _) => Div
+    case Token(NumberType, value) => new Value(value.toDouble)
     case _ => throw new RuntimeException
   }
 }

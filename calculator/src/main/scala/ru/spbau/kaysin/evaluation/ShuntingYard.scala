@@ -1,6 +1,6 @@
-package evaluation
+package ru.spbau.kaysin.evaluation
 
-import parsing.{ParsingException, Token}
+import ru.spbau.kaysin.parsing._
 
 import scala.collection.mutable.ListBuffer
 
@@ -10,24 +10,24 @@ import scala.collection.mutable.ListBuffer
   */
 object ShuntingYard {
   /**
-    * transforms the list of tokens into list of arithmetic evaluation entities wrote in reverse Polish notation.
+    * transforms the list of tokens into list of arithmetic ru.spbau.kaysin.evaluation entities wrote in reverse Polish notation.
     * It can be simply generalized to return rpn of any EvaluationEntity, not only of arithmetic one
     * (e.g. we can evaluate expression into ast)
     * @param tokens list of tokens, input of the algorithm
-    * @return list of arithmetic evaluation entities in reverse Polish notation
+    * @return list of arithmetic ru.spbau.kaysin.evaluation entities in reverse Polish notation
     */
   def toRPN(tokens: List[Token]): List[ArithmeticEvaluationEntity] = {
     val rpnResult: ListBuffer[ArithmeticEvaluationEntity] = ListBuffer.empty
     val operatorStack: ListBuffer[Token] = ListBuffer.empty
     def shift() = rpnResult += ArithmeticEvaluationEntity(operatorStack.remove(0))
     tokens.foreach {
-      case number@Token(parsing.Number, _) => rpnResult += ArithmeticEvaluationEntity(number)
-      case opToken@Token(operator: parsing.Operator, _) =>
+      case number@Token(NumberType, _) => rpnResult += ArithmeticEvaluationEntity(number)
+      case opToken@Token(operator: OperatorType, _) =>
         def condition(token: Token): Boolean = {
           token.tokenType match {
-            case operator2: parsing.Operator if operator.isLeftAssoc &&
+            case operator2: OperatorType if operator.isLeftAssoc &&
               operator.priority < operator2.priority => true
-            case operator2: parsing.Operator if operator.isLeftAssoc &&
+            case operator2: OperatorType if operator.isLeftAssoc &&
               operator.priority <= operator2.priority => true
             case _ => false
           }
@@ -37,9 +37,9 @@ object ShuntingYard {
           shift()
         }
         opToken +=: operatorStack
-      case br@Token(parsing.OpeningBracket, _) => br +=: operatorStack
-      case Token(parsing.ClosingBracket, _) =>
-        while (operatorStack.headOption.exists(_.tokenType != parsing.OpeningBracket)) {
+      case br@Token(OpeningBracketType, _) => br +=: operatorStack
+      case Token(ClosingBracketType, _) =>
+        while (operatorStack.headOption.exists(_.tokenType != OpeningBracketType)) {
           shift()
         }
         if (operatorStack.isEmpty) {
@@ -49,7 +49,7 @@ object ShuntingYard {
     }
     while (operatorStack.nonEmpty) {
       operatorStack.remove(0) match {
-        case token@Token(_:parsing.Operator, _) => rpnResult += ArithmeticEvaluationEntity(token)
+        case token@Token(_:OperatorType, _) => rpnResult += ArithmeticEvaluationEntity(token)
         case _ => throw ParsingException
       }
     }

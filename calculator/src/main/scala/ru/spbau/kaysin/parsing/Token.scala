@@ -1,4 +1,4 @@
-package parsing
+package ru.spbau.kaysin.parsing
 
 /**
   * The class representing arithmetic token (short piece of input which makes sense in the context)
@@ -20,7 +20,7 @@ object Token {
     * @return Wrapped Token if both of the arguments are presented. Otherwise returns None.
     */
   def apply(maybeTokenType: Option[_ <: TokenType], maybeValue: Option[String]): Option[Token] = {
-    for { // the evaluation in Option monad.
+    for { // the ru.spbau.kaysin.evaluation in Option monad.
       tokenType <- maybeTokenType
       value <- maybeValue
     } yield Token(tokenType, value)

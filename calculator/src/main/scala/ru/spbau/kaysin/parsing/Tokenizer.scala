@@ -1,4 +1,4 @@
-package parsing
+package ru.spbau.kaysin.parsing
 
 import scala.util.matching.Regex
 
