@@ -1,6 +1,6 @@
 package evaluation
 
-import parsing.Token
+import parsing.{ParsingException, Token}
 
 import scala.collection.mutable.ListBuffer
 
@@ -43,14 +43,14 @@ object ShuntingYard {
           shift()
         }
         if (operatorStack.isEmpty) {
-          throw new RuntimeException
+          throw ParsingException
         }
         operatorStack.remove(0)
     }
     while (operatorStack.nonEmpty) {
       operatorStack.remove(0) match {
         case token@Token(_:parsing.Operator, _) => rpnResult += ArithmeticEvaluationEntity(token)
-        case _ => throw new RuntimeException
+        case _ => throw ParsingException
       }
     }
     rpnResult.toList

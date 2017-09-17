@@ -1,6 +1,7 @@
 package evaluation
 
 import parsing.Token
+import sun.security.pkcs.ParsingException
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -56,7 +57,7 @@ sealed trait Operator extends ArithmeticEvaluationEntity {
     */
   override def evaluate(rpmStack: mutable.ListBuffer[Double]): Unit = {
     if (rpmStack.length < 2) {
-      throw new RuntimeException
+      throw EvaluationException
     }
     val second = rpmStack.remove(0)
     val first = rpmStack.remove(0)
