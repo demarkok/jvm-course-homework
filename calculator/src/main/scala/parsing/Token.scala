@@ -1,7 +1,6 @@
-package interface
+package parsing
 
-
-class Token(val tokenType: TokenType, val value: String)
+class Token(tokenType: TokenType, value: String)
 
 object Token {
   def apply(maybeTokenType: Option[_ <: TokenType], maybeValue: Option[String]): Option[Token] = {

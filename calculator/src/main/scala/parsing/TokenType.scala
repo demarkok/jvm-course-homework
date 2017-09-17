@@ -1,4 +1,4 @@
-package interface
+package parsing
 
 import scala.util.matching.Regex
 

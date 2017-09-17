@@ -1,6 +1,4 @@
-package arithmetic
-
-import interface.TokenType
+package parsing
 
 import scala.util.matching.Regex
 
@@ -17,8 +15,8 @@ object ArithmeticTokenType {
   ClosingBracket
   Plus
   Minus
-  Multiplication
-  Division
+  Mul
+  Div
   Number
 }
 
@@ -38,11 +36,11 @@ case object Minus extends ArithmeticTokenType {
   override val regex: Regex = "-".r
 }
 
-case object Multiplication extends ArithmeticTokenType {
+case object Mul extends ArithmeticTokenType {
   override val regex: Regex = raw"\*".r
 }
 
-case object Division extends ArithmeticTokenType {
+case object Div extends ArithmeticTokenType {
   override val regex: Regex = "/".r
 }
 

@@ -1,6 +1,4 @@
-package arithmetic
-
-import interface.{Token, Tokenizer}
+package parsing
 
 import scala.util.matching.Regex
 
@@ -13,17 +11,16 @@ object ArithmeticTokenizer extends Tokenizer {
       .r
   }
 
-  override def tokenize(rawString: String): Option[List[Token]] = {
+  override def tokenize(rawString: String): Option[List[ArithmeticToken]] = {
     val string = rawString.trim
     if (string.isEmpty) {
       Some(List.empty)
     } else {
       val maybeMatchResult = regex.findPrefixMatchOf(string)
       val maybeMatchedString = maybeMatchResult.map(_.matched)
-      println(maybeMatchedString)
       val maybeTokenType = ArithmeticTokenType.getInstances
         .find(tokenType => maybeMatchResult.exists(_.group(tokenType.toString) != null))
-      val maybeToken = Token(maybeTokenType, maybeMatchedString)
+      val maybeToken = ArithmeticToken(maybeTokenType, maybeMatchedString)
       for {
         token <- maybeToken
         matchedString <- maybeMatchedString
