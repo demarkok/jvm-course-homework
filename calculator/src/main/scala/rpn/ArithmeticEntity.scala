@@ -1,19 +1,19 @@
 package rpn
 
-import parsing.ArithmeticToken
+import parsing.Token
 
 sealed trait ArithmeticEntity
 
 object ArithmeticEntity {
-  def apply(token: ArithmeticToken): ArithmeticEntity = {
+  def apply(token: Token): ArithmeticEntity = {
     token match {
-      case ArithmeticToken(parsing.OpeningBracket, _) => OpeningBracket
-      case ArithmeticToken(parsing.ClosingBracket, _) => ClosingBracket
-      case ArithmeticToken(parsing.Plus, _) => Plus
-      case ArithmeticToken(parsing.Minus, _) => Minus
-      case ArithmeticToken(parsing.Mul, _) => Mul
-      case ArithmeticToken(parsing.Div, _) => Div
-      case ArithmeticToken(parsing.Number, value) => Number(value.toDouble)
+      case Token(parsing.OpeningBracket, _) => OpeningBracket
+      case Token(parsing.ClosingBracket, _) => ClosingBracket
+      case Token(parsing.Plus, _) => Plus
+      case Token(parsing.Minus, _) => Minus
+      case Token(parsing.Mul, _) => Mul
+      case Token(parsing.Div, _) => Div
+      case Token(parsing.Number, value) => Number(value.toDouble)
     }
   }
 }

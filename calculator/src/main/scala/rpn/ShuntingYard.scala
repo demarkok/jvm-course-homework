@@ -1,12 +1,12 @@
 package rpn
 
 import evaluation.ArithmeticEvaluationEntity
-import parsing.ArithmeticToken
+import parsing.Token
 
 import scala.collection.mutable.ListBuffer
 
 object ShuntingYard {
-  def toRPN(tokens: List[ArithmeticToken]): List[ArithmeticEvaluationEntity] = {
+  def toRPN(tokens: List[Token]): List[ArithmeticEvaluationEntity] = {
     val entities = tokens.map(x => ArithmeticEntity(x))
     val rpnResult: ListBuffer[ArithmeticEvaluationEntity] = ListBuffer.empty
     val operatorStack: ListBuffer[ArithmeticEntity] = ListBuffer.empty

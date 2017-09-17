@@ -1,8 +1,6 @@
 import evaluation.Evaluator
-import parsing.{ArithmeticTokenType, ArithmeticTokenizer, Tokenizer}
+import parsing.Tokenizer
 import rpn.ShuntingYard
-
-import scala.collection.mutable.ListBuffer
 
 object Main {
 
@@ -10,7 +8,7 @@ object Main {
 
     val input = scala.io.StdIn.readLine() : String
 
-    val tokens = ArithmeticTokenizer.tokenize(input)
+    val tokens = Tokenizer.tokenize(input)
     val rpn = ShuntingYard.toRPN(tokens.get)
     val evaluator = new Evaluator[Double]
 
