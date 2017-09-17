@@ -3,7 +3,6 @@ package parsing
 import scala.util.matching.Regex
 
 object Tokenizer {
-
   lazy val regex: Regex = {
     TokenType.getInstances
       .map(tokenType => "(?<" + tokenType.toString + ">" + tokenType.regex.regex + ")")

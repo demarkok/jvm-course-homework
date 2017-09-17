@@ -1,6 +1,5 @@
-import evaluation.Evaluator
+import evaluation.{Evaluator, ShuntingYard}
 import parsing.Tokenizer
-import rpn.ShuntingYard
 
 object Main {
 

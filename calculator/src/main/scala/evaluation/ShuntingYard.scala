@@ -1,24 +1,23 @@
-package rpn
+package evaluation
 
-import evaluation.ArithmeticEvaluationEntity
 import parsing.Token
 
 import scala.collection.mutable.ListBuffer
 
 object ShuntingYard {
   def toRPN(tokens: List[Token]): List[ArithmeticEvaluationEntity] = {
-    val entities = tokens.map(x => ArithmeticEntity(x))
+
     val rpnResult: ListBuffer[ArithmeticEvaluationEntity] = ListBuffer.empty
-    val operatorStack: ListBuffer[ArithmeticEntity] = ListBuffer.empty
+    val operatorStack: ListBuffer[Token] = ListBuffer.empty
     def shift() = rpnResult += ArithmeticEvaluationEntity(operatorStack.remove(0))
-    entities.foreach {
-      case number: Number => rpnResult += ArithmeticEvaluationEntity(number)
-      case operator: Operator =>
-        def condition(entity: ArithmeticEntity): Boolean = {
-          entity match {
-            case operator2: Operator if operator.isLeftAssoc &&
+    tokens.foreach {
+      case number@Token(parsing.Number, _) => rpnResult += ArithmeticEvaluationEntity(number)
+      case opToken@Token(operator: parsing.Operator, _) =>
+        def condition(token: Token): Boolean = {
+          token.tokenType match {
+            case operator2: parsing.Operator if operator.isLeftAssoc &&
               operator.priority < operator2.priority => true
-            case operator2: Operator if operator.isLeftAssoc &&
+            case operator2: parsing.Operator if operator.isLeftAssoc &&
               operator.priority <= operator2.priority => true
             case _ => false
           }
@@ -27,10 +26,10 @@ object ShuntingYard {
         while (operatorStack.headOption.exists(condition)) {
           shift()
         }
-        operator +=: operatorStack
-      case br @ OpeningBracket => br +=: operatorStack
-      case ClosingBracket =>
-        while (operatorStack.headOption.exists(_ != OpeningBracket)) {
+        opToken +=: operatorStack
+      case br@Token(parsing.OpeningBracket, _) => br +=: operatorStack
+      case Token(parsing.ClosingBracket, _) =>
+        while (operatorStack.headOption.exists(_.tokenType != parsing.OpeningBracket)) {
           shift()
         }
         if (operatorStack.isEmpty) {
@@ -40,7 +39,7 @@ object ShuntingYard {
     }
     while (operatorStack.nonEmpty) {
       operatorStack.remove(0) match {
-        case op: Operator => rpnResult += ArithmeticEvaluationEntity(op)
+        case token@Token(_:parsing.Operator, _) => rpnResult += ArithmeticEvaluationEntity(token)
         case _ => throw new RuntimeException
       }
     }

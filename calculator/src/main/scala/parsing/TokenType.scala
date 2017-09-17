@@ -21,6 +21,11 @@ object TokenType {
   Number
 }
 
+sealed trait Operator extends TokenType {
+  val priority: Int
+  val isLeftAssoc: Boolean
+}
+
 case object OpeningBracket extends TokenType {
   override val regex: Regex = raw"\(".r
 }
@@ -29,20 +34,28 @@ case object ClosingBracket extends TokenType {
   override val regex: Regex = raw"\)".r
 }
 
-case object Plus extends TokenType {
+case object Plus extends Operator {
   override val regex: Regex = raw"\+".r
+  override val priority = 1
+  override val isLeftAssoc = true
 }
 
-case object Minus extends TokenType {
+case object Minus extends Operator {
   override val regex: Regex = "-".r
+  override val priority = 1
+  override val isLeftAssoc = true
 }
 
-case object Mul extends TokenType {
+case object Mul extends Operator {
   override val regex: Regex = raw"\*".r
+  override val priority = 2
+  override val isLeftAssoc = true
 }
 
-case object Div extends TokenType {
+case object Div extends Operator {
   override val regex: Regex = "/".r
+  override val priority = 2
+  override val isLeftAssoc = true
 }
 
 case object Number extends TokenType {

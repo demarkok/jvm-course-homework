@@ -1,6 +1,6 @@
 package evaluation
 
-import rpn.ArithmeticEntity
+import parsing.Token
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -8,12 +8,12 @@ import scala.collection.mutable.ListBuffer
 sealed trait ArithmeticEvaluationEntity extends RpnEvaluationEntity[Double]
 
 object ArithmeticEvaluationEntity {
-  def apply(entity: ArithmeticEntity): ArithmeticEvaluationEntity = entity match {
-    case rpn.Plus => Plus
-    case rpn.Minus => Minus
-    case rpn.Mul => Multiplication
-    case rpn.Div => Division
-    case rpn.Number(value) => new Value(value)
+  def apply(token: Token): ArithmeticEvaluationEntity = token match {
+    case Token(parsing.Plus, _) => Plus
+    case Token(parsing.Minus, _) => Minus
+    case Token(parsing.Mul, _) => Mul
+    case Token(parsing.Div, _) => Div
+    case Token(parsing.Number, value) => new Value(value.toDouble)
     case _ => throw new RuntimeException
   }
 }
@@ -31,8 +31,8 @@ sealed abstract class Operator extends ArithmeticEvaluationEntity {
     if (rpmStack.length < 2) {
       throw new RuntimeException
     }
-    val first = rpmStack.remove(0)
     val second = rpmStack.remove(0)
+    val first = rpmStack.remove(0)
     function2(first, second) +=: rpmStack
   }
 }
@@ -45,11 +45,11 @@ object Minus extends Operator {
   override val function2: (Double, Double) => Double = _-_
 }
 
-object Multiplication extends Operator {
+object Mul extends Operator {
   override val function2: (Double, Double) => Double = _*_
 }
 
-object Division extends Operator {
+object Div extends Operator {
   override val function2: (Double, Double) => Double = _/_
 }
 
