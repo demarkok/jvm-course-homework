@@ -18,11 +18,15 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 
-
+/**
+  * The main actor corresponding to the bot (one for all the connections)
+  * @param token telegram bot token
+  * @param database database actor keeping all the words (HatStorageActor)
+  */
 class HatBotActor(val token: String,
                   val database: ActorRef) extends TelegramBot with Polling with Commands with Actor {
 
-  implicit val timeout: Timeout = Timeout(60 seconds)
+  private implicit val timeout: Timeout = Timeout(60 seconds)
 
   import HatBotActor._
 
@@ -169,9 +173,26 @@ class HatBotActor(val token: String,
 
 object HatBotActor {
 
+  /**
+    * Function allowing to create the actor in a safe way.
+    * @param token - telegram token argument which is passed to HatBotActor's constructor
+    * @param database - database actor which is passed to HatBotActor's constructor
+    * @return Props object which is passed to system.actorOf
+    */
   def props(token: String, database: ActorRef): Props = Props(classOf[HatBotActor], token, database)
 
+  /**
+    * State holder which wraps a bot state and allows to add side-effects to state switching
+    * @param bot HatBotActor who's methods (send) the state holder asks.
+    * @param state A held state.
+    * @param id Chat id which is used to send messages
+    */
   case class StateHolder(bot: HatBotActor, var state: BotState = MainMenu)(implicit id: Long) {
+
+    /**
+      * Change state. All the side effects are here.
+      * @param newState new held state.
+      */
     def changeState(newState: BotState): Unit = {
       newState match {
         case withKeyboard: WithCommands =>
@@ -183,15 +204,47 @@ object HatBotActor {
     }
   }
 
+  /**
+    * A response which occurs when you ask a new word.
+    */
   sealed trait WordResponse
 
-  case object Run
+  /**
+    * A response which occurs when there's no more words in the hat
+    * @param wordsGuessed Number of words guessed in this round.
+    */
   case class HatIsEmpty(wordsGuessed: Int) extends WordResponse
+
+  /**
+    * A response wrapping a new word from the hat.
+    * @param word A got word
+    */
   case class Word(word: String) extends WordResponse
 
+
+  /**
+    * A query to run the bot.
+    */
+  case object Run
+
+  /**
+    * A message which occurs when round time is up.
+    * @param id Id of the chat in which the game is running.
+    * @param wordsGuessed Number of words guessed in this round.
+    */
   case class TimeIsUp(id: Long, wordsGuessed: Int)
+
+  /**
+    *
+    * @param id Id of the chat in which the game is running.
+    * @param secsLeft Time (in seconds) until the end of round.
+    */
   case class TimeIsRunningOut(id: Long, secsLeft: Int)
 
   private val hidingMessage = "\n*** Скрывающее сообщение ***\n\n" * 5
+
+  /**
+    * Time of game round in seconds.
+    */
   val roundTime: Int = 20
 }
