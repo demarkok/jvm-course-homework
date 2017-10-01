@@ -43,7 +43,7 @@ class HatBotActor(val token: String,
         state
       })
 
-      val command: UserMessage = MessageParser.parser(text)
+      val command: UserMessage = MessageParser.parse(text)
       userState.state match  {
         case MainMenu => command match {
           case AddWords =>
