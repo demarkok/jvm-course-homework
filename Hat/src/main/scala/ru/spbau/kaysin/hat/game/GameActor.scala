@@ -14,20 +14,24 @@ import scala.concurrent.duration._
 import scala.util.{Random, Success}
 
 
-
+/**
+  * An actor representing a game session.
+  * @param hat The name of the hat in which user plays.
+  * @param id Id of the chat where the game were started.
+  * @param database Database actor.
+  */
 class GameActor(hat: String, id: Long, database: ActorRef)
                (implicit executionContext: ExecutionContext) extends Actor{
-  var running: Boolean = false
-  var wordsGuessed: Int = 0
-  var words: mutable.ListBuffer[String] = ListBuffer.empty
+  private var running: Boolean = false
+  private var wordsGuessed: Int = 0
+  private var words: mutable.ListBuffer[String] = ListBuffer.empty
 
-  implicit val timeout: Timeout = Timeout(1.second)
+  implicit val timeout: Timeout = Timeout(60 seconds)
 
   (database ? GetWords(hat)).onComplete {
     case Success(Words(newWords)) =>
       words ++= newWords
   }
-
 
   override def receive: Receive = {
     case Start(time) =>
@@ -62,13 +66,37 @@ class GameActor(hat: String, id: Long, database: ActorRef)
 }
 
 object GameActor {
-
+  /**
+    * Function allowing to create the actor in a safe way.
+    * @param hat passed to GameActor constructor
+    * @param database passed to GameActor constructor
+    * @param id passed to GameActor constructor
+    * @param executionContext passed to GameActor constructor
+    * @return Props object which is passed to system.actorOf
+    */
   def props(hat: String, database: ActorRef)
            (implicit id: Long, executionContext: ExecutionContext): Props = Props(new GameActor(hat, id, database))
 
+  /**
+    * A response from database.
+    * @param words The list of words contained in the hat.
+    */
   case class Words(words: List[String])
+
+  /**
+    * A command to start the round.
+    * @param timeInSecs -- Round duration in seconds.
+    */
   case class Start(timeInSecs: Int)
+
+  /**
+    * Query to get a new random word from the hat.
+    */
   case object GetWord
+
+  /**
+    * Responce which is send by user when whe word is guessed.
+    */
   case object Guessed
 
 }
