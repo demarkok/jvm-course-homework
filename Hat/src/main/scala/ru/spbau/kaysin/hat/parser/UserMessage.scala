@@ -5,62 +5,44 @@ sealed trait UserMessage
 
 /**
   * User command. Something starting with '/'
+  * @param command contained command
   */
-trait Command extends UserMessage {
-  /**
-    * Contained command.
-    */
-  val command: String
-}
+sealed abstract class Command(val command: String) extends UserMessage
 
 /**
   * Start the bot.
   */
-case object Start extends Command {
-  override val command = "start"
-}
+case object Start extends Command("start")
 
 /**
   * Start a game.
   */
-case object Play extends Command {
-  override val command = "play"
-}
+case object Play extends Command("play")
 
 /**
   * Add words into a hat.
   */
-case object AddWords extends Command {
-  override val command = "add"
-}
+case object AddWords extends Command("add")
 
 /**
   * A message which user sends when he decides to end the list of words he added to the hat.
   */
-case object EndOfInput extends Command {
-  override val command: String = "done"
-}
+case object EndOfInput extends Command("done")
 
 /**
   * Start a game round.
   */
-case object StartRound extends Command {
-  override val command = "run"
-}
+case object StartRound extends Command("start")
 
 /**
   * Word is guessed. Ask for a new one.
   */
-case object NextWord extends Command {
-  override val command = "next"
-}
+case object NextWord extends Command("next")
 
 /**
   * Ask for the rules of the game.
   */
-case object Rules extends Command {
-  override val command = "rules"
-}
+case object Rules extends Command("rules")
 
 /**
   * A word sent by user. It might be a hat name or a new word to add.
