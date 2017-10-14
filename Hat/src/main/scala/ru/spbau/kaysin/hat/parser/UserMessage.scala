@@ -32,7 +32,7 @@ case object EndOfInput extends Command("done")
 /**
   * Start a game round.
   */
-case object StartRound extends Command("start")
+case object StartRound extends Command("run")
 
 /**
   * Word is guessed. Ask for a new one.
