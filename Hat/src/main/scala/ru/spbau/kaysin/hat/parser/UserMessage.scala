@@ -56,6 +56,13 @@ case object NextWord extends Command {
 }
 
 /**
+  * Ask for the rules of the game.
+  */
+case object Rules extends Command {
+  override val command = "rules"
+}
+
+/**
   * A word sent by user. It might be a hat name or a new word to add.
   * @param word Wrapped word.
   */

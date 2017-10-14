@@ -52,7 +52,8 @@ class GameActor(hat: String, id: Long, database: ActorRef)
       words = Random.shuffle(words)
     case GetWord =>
       if (words.isEmpty) {
-        sender ! HatIsEmpty
+        println("Hi")
+        sender ! HatIsEmpty(wordsGuessed)
         running = false
       } else {
         sender ! Word(words.head)
@@ -95,7 +96,7 @@ object GameActor {
   case object GetWord
 
   /**
-    * Responce which is send by user when whe word is guessed.
+    * A response which is send by user when whe word is guessed.
     */
   case object Guessed
 

@@ -37,10 +37,8 @@ class HatBotActor(val token: String,
     implicit val id: Long = message.chat.id
     message.text.foreach { text =>
       val userState = states.getOrElseUpdate(id, {
-        send("Привет. Это эмулятор шляпы. Со шляпой можно делать две вещи: " +
-          "добавлять в неё слова (даже с разных устройств) и играть (с одного устройства).")(id)
-        val state = StateHolder(this)
-        state
+        send(welcome)
+        StateHolder(this)
       })
 
       val command: UserMessage = MessageParser.parse(text)
@@ -52,8 +50,11 @@ class HatBotActor(val token: String,
             userState.changeState(HatWaitingPlay)
           case Start =>
             userState.changeState(MainMenu)
+          case Rules =>
+            send(rules)
+            userState.changeState(MainMenu)
           case _ =>
-            send("Неправильная команда.")
+            send("Unknown command =(.")
         }
 
         case HatWaitingAdd => command match {
@@ -62,19 +63,19 @@ class HatBotActor(val token: String,
           case UserWord(hat) =>
             userState.changeState(Adding(hat))
           case _ =>
-            send("Имя шляпы должно состоять из одного слова.")
+            send("Hat name is one word")
         }
 
         case Adding(hat) => command match {
           case Start =>
             userState.changeState(MainMenu)
           case EndOfInput =>
-            userState.changeState(MainMenu)
             send(hidingMessage)
+            userState.changeState(MainMenu)
           case UserWord(word) =>
             database ! AddWord(hat, word)
           case _ =>
-            send("Неправильное слово.")
+            send("Incorrect word")
         }
 
         case HatWaitingPlay => command match {
@@ -85,7 +86,7 @@ class HatBotActor(val token: String,
             games.update(id, game)
             userState.changeState(Interlude(game))
           case _ =>
-            send("Имя шляпы должно состоять из одного слова.")
+            send("Hat name is one word")
         }
 
         case Interlude(game) => command match {
@@ -97,7 +98,7 @@ class HatBotActor(val token: String,
             game ! GameActor.Start(roundTime)
             askForAWord(game) match {
               case HatIsEmpty(_) =>
-                send("Эта шляпа пуста. Добавьте в неё слова или выберете другю.")
+                send("This hat is empty. Add words to it or choose another.")
                 userState.changeState(MainMenu)
               case Word(word) =>
                 send(word)
@@ -113,8 +114,8 @@ class HatBotActor(val token: String,
             game ! Guessed
             askForAWord(game) match {
               case HatIsEmpty(wordsGuessed) =>
-                send(s"Слов угадано: $wordsGuessed")
-                send("Игра закончена, шляпа пуста!")
+                send(s"Words guessed: $wordsGuessed")
+                send("Game over! The hat is empty.")
                 userState.changeState(MainMenu)
                 gameOver(id)
               case Word(word) =>
@@ -132,7 +133,7 @@ class HatBotActor(val token: String,
         stateHolder.state match {
           case Round(game) =>
             send(hidingMessage)(id)
-            send(s"Время вышло. Слов угадано: $wordsGuessed")(id)
+            send(s"Time is up! Words guessed: $wordsGuessed")(id)
             stateHolder.changeState(Interlude(game))
           case _ =>
         }
@@ -141,7 +142,7 @@ class HatBotActor(val token: String,
       states.get(id).foreach { stateHolder =>
         stateHolder.state match {
           case Round(_) =>
-            send(s"Осталось ${left}с")(id)
+            send(s"${left}s left!")(id)
           case _ =>
         }
       }
@@ -241,10 +242,29 @@ object HatBotActor {
     */
   case class TimeIsRunningOut(id: Long, secsLeft: Int)
 
-  private val hidingMessage = "\n*** Скрывающее сообщение ***\n\n" * 5
+  private val hidingMessage: String = ".\n" * 40
 
   /**
     * Time of game round in seconds.
     */
   val roundTime: Int = 20
+
+  private val welcome: String = "Hi! This is the hat game emulator. You can do two things with the hat: add new words to it or play it." +
+    "You can use several devices to ADD WORDS into one hat if you select the same hat name. But you should use one device " +
+    s"to PLAY the same game. For more specific rules write /${Rules.command}."
+
+  private val rules: String = "Firstly, let's describe real analogue of the game.\n Firs of all, every player writes several " +
+    "nouns on small pieces of paper and throws it into the hat. Then the players divide into pairs. One pair = one team. " +
+    "The players sit in a circle. Players from one pair should sit across from each other. " +
+    "The hat is passed through the circle.\nThe game consists of several round lasting 20 seconds. " +
+    "In one round one pair plays. One person of the pair should " +
+    "explain words and another should guess them. The explainer gets random words from the hat one by one (he doesn't pull out " +
+    "a new word until the old word is guessed by the guesser). The explainer shouldn't mention words with the same root as well as " +
+    "ones which sounds alike as well as the letters of the word.\n" +
+    "If the word wasn't guessed, it returns into the hat and can be explained in further rounds. " +
+    "If the word was guessed, it brings one point to the team. The game ends when the hat is empty. The team with max amount of" +
+    " points wins the game.\n" +
+    "This bot provides you infinite number of hats. You can add words into a hat and these words will permanently be in this " +
+    "hat (they will be restored after a round), so you can use several devices to add words into the same hat. " +
+    "Also you can play the game using some hat. But you should use one device for one game."
 }

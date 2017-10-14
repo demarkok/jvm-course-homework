@@ -29,6 +29,7 @@ class MessageParser extends RegexParsers {
       case EndOfInput.command => EndOfInput
       case StartRound.command => StartRound
       case NextWord.command => NextWord
+      case Rules.command => Rules
     }
 
   /**

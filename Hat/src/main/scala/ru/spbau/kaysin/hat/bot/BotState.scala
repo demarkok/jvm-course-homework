@@ -35,22 +35,22 @@ sealed trait WithCommands extends BotState {
 }
 
 case object MainMenu extends WithCommands {
-  override val commands = List((AddWords, "Добавить слова"), (Play, "Играть"))
-  override val message = "Добавить слова в шляпу или играть?"
+  override val commands = List((AddWords, "Add words"), (Play, "Play"), (Rules, "Show the rules"))
+  override val message = "You can add words to a hat or play it."
 }
 
 /**
   * A state when user should enter a hat name in which he wants to add new words.
   */
 case object HatWaitingAdd extends BotState {
-  override val message = "В какую шляпу?"
+  override val message = "Which hat do you want to add words in? (Enter the hat name)"
 }
 
 /**
   * A state when user should enter a hat name he wants to play
   */
 case object HatWaitingPlay extends BotState {
-  override val message = "В какую шляпу?"
+  override val message = "Which had do you want to play in? (Enter the hat name)"
 }
 
 /**
@@ -58,8 +58,8 @@ case object HatWaitingPlay extends BotState {
   * @param hat the hat to add new words.
   */
 case class Adding(hat: String) extends WithCommands {
-  override val commands = List((EndOfInput, "Закончить ввод"))
-  override val message: String = "Добавляйте слова по одному. Когда закончите, пишите " ++ EndOfInput.command
+  override val commands = List((EndOfInput, "Done!"))
+  override val message: String = s"Add new words one per message. When you are done with that, just write /${EndOfInput.command}."
 }
 
 /**
@@ -68,8 +68,8 @@ case class Adding(hat: String) extends WithCommands {
   * @param game the game user plays.
   */
 case class Interlude(game: ActorRef) extends WithCommands {
-  override val commands = List((StartRound, "Начать раунд"))
-  override val message: String = "Введите /" ++ StartRound.command ++ ", чтобы начать раунд."
+  override val commands = List((StartRound, "Start the round"))
+  override val message: String = s"Enter /${StartRound.command} to start the round."
 }
 
 /**
@@ -77,7 +77,7 @@ case class Interlude(game: ActorRef) extends WithCommands {
   * @param game the game user play.
   */
 case class Round(game: ActorRef) extends WithCommands{
-  override val commands = List((NextWord, "Следующее слово"))
-  override val message: String = "У вас есть " ++ HatBotActor.roundTime.toString ++ "секунд!"
+  override val commands = List((NextWord, "Next word"))
+  override val message: String = s"You have ${HatBotActor.roundTime} seconds. Let's go!"
   override val oneTime = false
 }
